@@ -47,5 +47,5 @@ services:
       - MYSQL_ROOT_PASSWORD
       - MYSQL_DATABASE
     volumes:
-      - ./docker/mysql/data:/var/lib/mysql:cached
+      - ./docker/mysql/data:/var/lib/mysql
       - ./docker/mysql/docker.cnf:/etc/mysql/conf.d/docker.cnf:cached
