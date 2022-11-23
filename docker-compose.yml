@@ -1,0 +1,51 @@
+version: '3.6'
+
+services:
+  web:
+    build:
+      context: ./docker/nginx
+      dockerfile: Dockerfile
+      args:
+        - NGINX_VERSION=${NGINX_VERSION}
+    ports:
+      - "80:80"
+    environment:
+      - NGINX_SERVER_NAME
+    volumes:
+      - ./wordpress:/var/www/html/wordpress:delegated
+      - ./phpmyadmin:/var/www/html/phpmyadmin:delegated
+    depends_on:
+      - app
+
+  app:
+    build:
+      context: ./docker/app
+      dockerfile: Dockerfile
+      args:
+        - PHP_VERSION=${PHP_VERSION}
+    environment:
+      - WP_SITE_URL
+      - MYSQL_USER
+      - MYSQL_PASSWORD
+      - MYSQL_DATABASE
+    volumes:
+      - ./wordpress:/var/www/html/wordpress:delegated
+      - ./phpmyadmin:/var/www/html/phpmyadmin:delegated
+      - ./docker/app/php.ini:/etc/php.ini:cached
+    depends_on:
+      - db
+
+  db:
+    build:
+      context: ./docker/mysql
+      dockerfile: Dockerfile
+      args:
+        - MYSQL_VERSION=${MYSQL_VERSION}
+    environment:
+      - MYSQL_USER
+      - MYSQL_PASSWORD
+      - MYSQL_ROOT_PASSWORD
+      - MYSQL_DATABASE
+    volumes:
+      - ./docker/mysql/data:/var/lib/mysql:cached
+      - ./docker/mysql/docker.cnf:/etc/mysql/conf.d/docker.cnf:cached
