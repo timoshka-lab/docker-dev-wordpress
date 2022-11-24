@@ -81,12 +81,17 @@ $table_prefix = 'wp_';
  *
  * @link https://ja.wordpress.org/support/article/debugging-in-wordpress/
  */
-define( 'WP_DEBUG', true );
+define( 'WP_DEBUG', false );
 
 /* カスタム値は、この行と「編集が必要なのはここまでです」の行の間に追加してください。 */
 
 define( 'WP_HOME', getenv('WP_SITE_URL') );
 define( 'WP_SITEURL', getenv('WP_SITE_URL') );
+
+define( 'SMTP_HOST', getenv('SMTP_HOST') );
+define( 'SMTP_PORT', getenv('SMTP_PORT') );
+define( 'SMTP_FROM', getenv('SMTP_FROM') );
+define( 'SMTP_NAME', getenv('SMTP_NAME') );
 
 /* 編集が必要なのはここまでです ! WordPress でのパブリッシングをお楽しみください。 */
 

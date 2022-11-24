@@ -1,4 +1,16 @@
 .env
 
+/phpmyadmin/*
+!/phpmyadmin/public
+/phpmyadmin/public/*
+!/phpmyadmin/public/.gitkeep
+!/phpmyadmin/public/config.inc.php
+
+/wordpress/*
+!/wordpress/public
+/wordpress/public/*
+!/wordpress/public/.gitkeep
+!/wordpress/public/wp-config.php
+
 /.idea
 /.vscode

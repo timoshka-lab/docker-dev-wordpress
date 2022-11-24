@@ -16,6 +16,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -q && \
 
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY conf.d /etc/nginx/conf.d
+COPY includes /etc/nginx/includes
 COPY start.sh /start.sh
 
 STOPSIGNAL SIGQUIT
