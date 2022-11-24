@@ -9,9 +9,13 @@ services:
         - NGINX_VERSION=${NGINX_VERSION}
     ports:
       - "80:80"
+      - "443:443"
     environment:
       - NGINX_SERVER_NAME
+      - NGINX_ENABLE_SSL
+      - NGINX_FORCE_HTTPS
     volumes:
+      - ./docker/nginx/certs:/etc/nginx/certs
       - ./wordpress:/var/www/html/wordpress:delegated
       - ./phpmyadmin:/var/www/html/phpmyadmin:delegated
     depends_on:
@@ -25,9 +29,14 @@ services:
         - PHP_VERSION=${PHP_VERSION}
     environment:
       - WP_SITE_URL
+      - WP_EMAIL
       - MYSQL_USER
       - MYSQL_PASSWORD
       - MYSQL_DATABASE
+      - SMTP_HOST=mail
+      - SMTP_PORT=1025
+      - SMTP_FROM=${WP_EMAIL}
+      - SMTP_NAME=WordPress
     volumes:
       - ./wordpress:/var/www/html/wordpress:delegated
       - ./phpmyadmin:/var/www/html/phpmyadmin:delegated
@@ -49,3 +58,19 @@ services:
     volumes:
       - ./docker/mysql/data:/var/lib/mysql
       - ./docker/mysql/docker.cnf:/etc/mysql/conf.d/docker.cnf:cached
+
+  mail:
+    image: mailhog/mailhog
+    container_name: mailhog
+    ports:
+      - "8025:8025"
+    environment:
+      MH_STORAGE: maildir
+      MH_MAILDIR_PATH: /tmp
+    volumes:
+      - maildir:/tmp
+    depends_on:
+      - app
+
+volumes:
+  maildir:
