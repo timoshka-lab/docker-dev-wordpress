@@ -50,6 +50,9 @@ if [ "$SKIP_WP" = false ]; then
 
     echo "Installing SMTP plugin..."
     wp_cmd plugin install --path="$WORDPRESS_DIR" --allow-root --activate http://github.com/timoshka-lab/wp-dev-smtp/archive/main.zip
+
+    echo "Fixing WordPress permissions..."
+    chown -R www-data:www-data $WORDPRESS_DIR
   fi
 else
   echo "Skipping WordPress installation..."
