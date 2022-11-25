@@ -40,7 +40,7 @@ if [ "$SKIP_WP" = false ]; then
     wp core install --path=$WORDPRESS_DIR --allow-root --skip-email --url="$WP_SITE_URL" --title="$WP_TITLE" --admin_user="$WP_USER" --admin_email="$WP_EMAIL"
 
     echo "Installing SMTP plugin..."
-    wp plugin install --path=$WORDPRESS_DIR --allow-root http://github.com/timoshka-lab/wp-dev-smtp/archive/main.zip
+    wp plugin install --path=$WORDPRESS_DIR --allow-root --activate http://github.com/timoshka-lab/wp-dev-smtp/archive/main.zip
   fi
 else
   echo "Skipping WordPress installation..."
