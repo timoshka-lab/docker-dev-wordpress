@@ -2,6 +2,15 @@
 
 set -e
 
+# 　wp-cliをphp8.1環境で実行した際に、Deprecatedエラーが出るので、一時的な対応としてphp-cliからwp-cliを実行するようにしています。
+# 参照： https://github.com/wp-cli/wp-cli/issues/5623
+# TODO: wp-cliのバグが修正されてから、wp-cliを直接実行する仕様に変更すること。
+
+function wp_cmd() {
+  # /usr/local/bin/wp "$@"
+  /usr/local/bin/php -d error_reporting='E_ALL ^ E_DEPRECATED' /usr/local/bin/wp "$@"
+}
+
 args=()
 SKIP_WP=false
 
@@ -34,13 +43,13 @@ if [ "$SKIP_WP" = false ]; then
     while [ -z "$WP_TITLE" ]; do read -r -p "Website Title: " WP_TITLE; done
 
     echo "Downloading WordPress..."
-    wp core download --path=$WORDPRESS_DIR --locale=ja --allow-root "${args[@]}"
+    wp_cmd core download --path="$WORDPRESS_DIR" --locale=ja --allow-root "${args[@]}"
 
     echo "Installing WordPress..."
-    wp core install --path=$WORDPRESS_DIR --allow-root --skip-email --url="$WP_SITE_URL" --title="$WP_TITLE" --admin_user="$WP_USER" --admin_email="$WP_EMAIL"
+    wp_cmd core install --path="$WORDPRESS_DIR" --allow-root --skip-email --url="$WP_SITE_URL" --title="$WP_TITLE" --admin_user="$WP_USER" --admin_email="$WP_EMAIL"
 
     echo "Installing SMTP plugin..."
-    wp plugin install --path=$WORDPRESS_DIR --allow-root --activate http://github.com/timoshka-lab/wp-dev-smtp/archive/main.zip
+    wp_cmd plugin install --path="$WORDPRESS_DIR" --allow-root --activate http://github.com/timoshka-lab/wp-dev-smtp/archive/main.zip
   fi
 else
   echo "Skipping WordPress installation..."
