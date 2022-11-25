@@ -3,6 +3,12 @@
 個別のお問い合わせやご要望にはお応えできかねますことをご了承下さい。
 
 # Installation
+## 自動インストール
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/timoshka-lab/docker-dev-wordpress/main/setup.sh)"
+```
+
+## 手動インストール
 ```zsh
 cd [WORKING_DIR]
 curl -L https://github.com/timoshka-lab/docker-dev-wordpress/archive/main.tar.gz | tar xvz -C ./ --strip-components=1
