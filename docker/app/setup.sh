@@ -39,8 +39,8 @@ if [ "$SKIP_WP" = false ]; then
     WP_USER=""
     WP_TITLE=""
 
-    while [ -z "$WP_USER" ]; do read -r -p "Username: " WP_USER; done
-    while [ -z "$WP_TITLE" ]; do read -r -p "Website Title: " WP_TITLE; done
+    while [ -z "$WP_USER" ]; do read -r -p "WordPress Username: " WP_USER; done
+    while [ -z "$WP_TITLE" ]; do read -r -p "WordPress Title: " WP_TITLE; done
 
     echo "Downloading WordPress..."
     wp_cmd core download --path="$WORDPRESS_DIR" --locale=ja --allow-root "${args[@]}"

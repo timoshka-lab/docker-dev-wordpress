@@ -3,7 +3,7 @@
 set -e
 
 # Validate working directory
-if [ -n "$(ls -A /path/to/dir)" ]; then
+if [ "$(ls -A | wc -l)" -gt 1 ]; then
    echo "Error: working directory is not empty." >&2
    exit 1
 fi
