@@ -34,7 +34,7 @@ if [ "$NGINX_ENABLE_SSL" = true ]; then
 else
   echo "Generating nginx configuration for http..."
   cat "$NGINX_INC_DIR/wordpress_locations.conf" > "$NGINX_INC_DIR/wordpress_http_context.conf"
-  cat "" > "$NGINX_INC_DIR/wordpress_https_server.conf"
+  echo "" > "$NGINX_INC_DIR/wordpress_https_server.conf"
 fi
 
 echo "-----------------------------------------------------------"
