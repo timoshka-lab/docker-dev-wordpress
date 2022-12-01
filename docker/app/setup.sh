@@ -32,8 +32,10 @@ done
 WORDPRESS_DIR=/var/www/html/wordpress/public
 PHPMYADMIN_DIR=/var/www/html/phpmyadmin/public
 
+echo "Starting application setup..."
+
 if [ "$SKIP_WP" = false ]; then
-  if [ -f "$WORDPRESS_DIR/index.php" ]; then
+  if [ -f "$WORDPRESS_DIR/wp-includes/version.php" ]; then
     echo "WordPress is already installed. Skipping..."
   else
     WP_USER=""
@@ -58,11 +60,11 @@ else
   echo "Skipping WordPress installation..."
 fi
 
-if [ -f "$PHPMYADMIN_DIR/index.php" ]; then
+if [ -f "$PHPMYADMIN_DIR/libraries/classes/Version.php" ]; then
   echo "phpMyAdmin is already installed. Skipping..."
 else
   echo "Downloading phpMyAdmin..."
   wget -qO- https://www.phpmyadmin.net/downloads/phpMyAdmin-latest-all-languages.tar.gz  | tar xz -C $PHPMYADMIN_DIR --strip-components=1
 fi
 
-echo -e "\e[32mDone!\e[0m"
+echo -e "\e[32mApplication setup is now Done!\e[0m"
