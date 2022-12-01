@@ -40,7 +40,7 @@ services:
     volumes:
       - ./wordpress:/var/www/html/wordpress:delegated
       - ./phpmyadmin:/var/www/html/phpmyadmin:delegated
-      - ./docker/app/php.ini:/etc/php.ini:cached
+      - ./docker/app/php.ini:/usr/local/etc/php/conf.d/php.ini:cached
     depends_on:
       - db
 

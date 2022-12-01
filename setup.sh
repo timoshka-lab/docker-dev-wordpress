@@ -19,6 +19,8 @@ if [ ! -x "$(command -v curl)" ]; then
   exit 1
 fi
 
+echo "Starting auto setup..."
+
 # Proceed setup
 curl -L https://github.com/timoshka-lab/docker-dev-wordpress/archive/main.tar.gz | tar xvz -C ./ --strip-components=1
 cp .env.example .env
@@ -30,7 +32,10 @@ docker compose up -d
 docker compose exec app /setup.sh
 
 if [ -x "$(command -v security)" ]; then
+  echo "Installing ssl certificate into keychain..."
   sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain "$(pwd)/docker/nginx/certs/server.crt"
 else
   echo "Warning: you have to add ssl certificate to your keychain manually."
 fi
+
+echo -e "\e[32mAuto setup is now Done!\e[0m"
