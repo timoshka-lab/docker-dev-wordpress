@@ -27,6 +27,8 @@ services:
       dockerfile: Dockerfile
       args:
         - PHP_VERSION=${PHP_VERSION}
+    env_file:
+      - .env.wp-salt
     environment:
       - WP_SITE_URL
       - WP_EMAIL
