@@ -5,7 +5,7 @@
 # Installation
 ## 自動インストール
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/timoshka-lab/docker-dev-wordpress/main/setup.sh)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/timoshka-lab/docker-dev-wordpress-setup/main/setup.sh)"
 ```
 
 ## 手動インストール
