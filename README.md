@@ -14,8 +14,9 @@ cd [WORKING_DIR]
 cd [WORKING_DIR]
 curl -L https://github.com/timoshka-lab/docker-dev-wordpress/archive/main.tar.gz | tar xvz -C ./ --strip-components=1
 cp .env.example .env
+cp .env.wp-salt.example .env.wp-salt
 
-# .envを編集
+# .envと.env.wp-saltファイルを編集
 
 docker compose build
 docker compose up -d
