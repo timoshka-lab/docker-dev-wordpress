@@ -27,6 +27,7 @@ RUN apk --update add \
     optipng \
     gifsicle \
     pngquant \
+    mysql-client \
     libjpeg-turbo-utils && \
     rm -rf /tmp/* /var/cache/apk/*
 
@@ -56,4 +57,6 @@ RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli
     mv wp-cli.phar /usr/local/bin/wp
 
 # Add setup script
-COPY ./setup.sh /setup.sh
+COPY bin/setup.sh /setup.sh
+COPY bin/export.sh /export.sh
+COPY bin/import.sh /import.sh

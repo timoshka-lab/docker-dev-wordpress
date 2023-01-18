@@ -43,6 +43,7 @@ services:
       - ./wordpress:/var/www/html/wordpress:delegated
       - ./phpmyadmin:/var/www/html/phpmyadmin:delegated
       - ./docker/app/php.ini:/usr/local/etc/php/conf.d/php.ini:cached
+      - ./docker/app/initdb.d:/initdb.d
     depends_on:
       - db
 

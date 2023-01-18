@@ -1,6 +1,9 @@
 .env
 .env.wp-salt
 
+/docker/app/initdb.d/*
+!/docker/app/initdb.d/.gitkeep
+
 /phpmyadmin/*
 !/phpmyadmin/public
 /phpmyadmin/public/*
