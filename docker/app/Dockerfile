@@ -60,3 +60,4 @@ RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli
 COPY bin/setup.sh /setup.sh
 COPY bin/export.sh /export.sh
 COPY bin/import.sh /import.sh
+COPY bin/setup.d /setup.d

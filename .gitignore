@@ -3,6 +3,8 @@
 
 /docker/app/initdb.d/*
 !/docker/app/initdb.d/.gitkeep
+/docker/app/bin/setup.d/*
+!/docker/app/bin/setup.d/.gitkeep
 
 /phpmyadmin/*
 !/phpmyadmin/public
