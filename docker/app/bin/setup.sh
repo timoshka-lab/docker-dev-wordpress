@@ -33,6 +33,7 @@ WORDPRESS_ADMIN_PASSWORD=develop
 WORDPRESS_DIR=/var/www/html/wordpress/public
 PHPMYADMIN_DIR=/var/www/html/phpmyadmin/public
 MYSQL_INIT_FILE=/initdb.d/001-mysql-init.sql
+EXTRA_SETUP_BIN_DIR=/setup.d
 
 echo "Starting application setup..."
 
@@ -84,6 +85,14 @@ if [ -f "$PHPMYADMIN_DIR/libraries/classes/Version.php" ]; then
 else
   echo "Downloading phpMyAdmin..."
   wget -qO- https://www.phpmyadmin.net/downloads/phpMyAdmin-latest-all-languages.tar.gz  | tar xz -C $PHPMYADMIN_DIR --strip-components=1
+fi
+
+if [ -n "$(ls "$EXTRA_SETUP_BIN_DIR")" ]; then
+  echo "Starting extra setup scripts..."
+  for file in "$EXTRA_SETUP_BIN_DIR"/*.sh; do
+    echo "Running $file..."
+    bash "$file"
+  done
 fi
 
 echo -e "\e[32mApplication setup is now Done!\e[0m"
