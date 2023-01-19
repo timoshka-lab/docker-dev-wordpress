@@ -35,6 +35,11 @@ PHPMYADMIN_DIR=/var/www/html/phpmyadmin/public
 MYSQL_INIT_FILE=/initdb.d/001-mysql-init.sql
 EXTRA_SETUP_BIN_DIR=/setup.d
 
+until mysqladmin ping -h "$MYSQL_HOST" --silent; do
+  echo 'Waiting for mysql server connection...'
+  sleep 2
+done
+
 echo "Starting application setup..."
 
 if [ "$SKIP_WP" = false ]; then

@@ -35,7 +35,7 @@ define( 'DB_USER', getenv('MYSQL_USER') );
 define( 'DB_PASSWORD', getenv('MYSQL_PASSWORD') );
 
 /** データベースのホスト名 */
-define( 'DB_HOST', 'db' );
+define( 'DB_HOST', getenv('MYSQL_HOST') );
 
 /** データベースのテーブルを作成する際のデータベースの文字セット */
 define( 'DB_CHARSET', 'utf8' );
