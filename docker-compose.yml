@@ -35,6 +35,7 @@ services:
       - MYSQL_USER
       - MYSQL_PASSWORD
       - MYSQL_DATABASE
+      - MYSQL_HOST=db
       - SMTP_HOST=mail
       - SMTP_PORT=1025
       - SMTP_FROM=${WP_EMAIL}
@@ -44,6 +45,7 @@ services:
       - ./phpmyadmin:/var/www/html/phpmyadmin:delegated
       - ./docker/app/php.ini:/usr/local/etc/php/conf.d/php.ini:cached
       - ./docker/app/initdb.d:/initdb.d
+      - ./docker/app/setup.d:/setup.d
     depends_on:
       - db
 
