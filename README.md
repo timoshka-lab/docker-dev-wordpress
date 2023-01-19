@@ -9,6 +9,13 @@ cd [WORKING_DIR]
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/timoshka-lab/docker-dev-wordpress-setup/main/setup.sh)"
 ```
 
+### インストール後の設定・確認
+* '/etc/hosts' ファイルを編集します。詳細はこちら： 'docker compose logs web'
+* '$WP_SITE_URL' で設定したURLをブラウザで確認できます。
+* WordPressの管理ユーザーパスワードは 'develop' です。
+* 'Dev SMTP' プラグインを管理画面から有効化します。 Mailhogへのアクセスこちら： [http://127.0.0.1:8025/](http://127.0.0.1:8025/).
+* プロジェクトの管理方法に応じて '.gitignore' ファイルを編集して下さい。
+
 ## 手動インストール
 ```zsh
 cd [WORKING_DIR]
@@ -21,14 +28,15 @@ cp .env.wp-salt.example .env.wp-salt
 docker compose build
 docker compose up -d
 docker compose exec app /setup.sh [--version version] [--skip-wp]
-
-# 1. 'setup.sh'の出力内でWordPressのパスワードを確認します。
-# 2. '/etc/hosts' ファイルを編集します。詳細はこちら：'docker compose logs web'
-# 3. 'docker/nginx/certs' 内の 'server.crt' 証明書をキーチェーンに追加します。
-# 4. "$WP_SITE_URL" で設定したURLをブラウザで確認できます。
-# 5. 'Dev SMTP' プラグインを管理画面から有効化します。 Mailhogへのアクセスこちら：http://127.0.0.1:8025/.
-# 6. プロジェクトの管理方法に応じて '.gitignore' ファイルを編集して下さい。
 ```
+
+### インストール後の設定・確認
+* '/etc/hosts' ファイルを編集します。詳細はこちら： 'docker compose logs web'
+* 'docker/nginx/certs' 内の 'server.crt' 証明書を端末のキーチェーンに追加します。
+* '$WP_SITE_URL' で設定したURLをブラウザで確認できます。
+* WordPressの管理ユーザーパスワードは 'develop' です。
+* 'Dev SMTP' プラグインを管理画面から有効化します。 Mailhogへのアクセスこちら： [http://127.0.0.1:8025/](http://127.0.0.1:8025/).
+* プロジェクトの管理方法に応じて '.gitignore' ファイルを編集して下さい。
 
 # 使い方
 ## 一般的なユースケース
@@ -61,26 +69,43 @@ docker compose exec app /export.sh [--pass password] [--skip-pass-reset]
 ```
 
 ## 共有される側の準備
+### 1. プロジェクトレポジトリーの設置
 ```zsh
-# プロジェクトのレポジトリーをローカルに設置します。
 cd [WORKING_DIR]
 git clone [REPO_URL]
 cd [REPO_NAME]
+```
 
+### 2.1 自動インストール
+```zsh
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/timoshka-lab/docker-dev-wordpress-setup/main/setup.sh)"
+```
+
+#### インストール後の設定・確認
+* '/etc/hosts' ファイルを編集します。詳細はこちら： 'docker compose logs web'
+* '$WP_SITE_URL' で設定したURLをブラウザで確認できます。
+* WordPressの管理ユーザーパスワードは 'develop' です。
+* 'Dev SMTP' プラグインを管理画面から有効化します。 Mailhogへのアクセスこちら： [http://127.0.0.1:8025/](http://127.0.0.1:8025/).
+
+### 2.2 手動インストール
+```zsh
 # ENVファイルをテンプレートからコピーします。ENVファイルをGitで管理している場合は不要です。
 cp .env.example .env
 cp .env.wp-salt.example .env.wp-salt
-
 # .envと.env.wp-saltファイルを編集
 
 docker compose build
 docker compose up -d
 docker compose exec app /setup.sh [--version version]
-
-# 1. '/etc/hosts' ファイルを編集します。詳細はこちら：'docker compose logs web'
-# 2. 'docker/nginx/certs' 内の 'server.crt' 証明書をキーチェーンに追加します。
-# 3. "$WP_SITE_URL" で設定したURLをブラウザで確認できます。
 ```
+
+#### インストール後の設定・確認
+* '/etc/hosts' ファイルを編集します。詳細はこちら： 'docker compose logs web'
+* 'docker/nginx/certs' 内の 'server.crt' 証明書を端末のキーチェーンに追加します。
+* '$WP_SITE_URL' で設定したURLをブラウザで確認できます。
+* WordPressの管理ユーザーパスワードは 'develop' です。
+* 'Dev SMTP' プラグインを管理画面から有効化します。 Mailhogへのアクセスこちら： [http://127.0.0.1:8025/](http://127.0.0.1:8025/).
+
 
 # プロジェクトの管理について
 このレポジトリーはWordPressの開発環境を構築するためのスターターキットになります。  
