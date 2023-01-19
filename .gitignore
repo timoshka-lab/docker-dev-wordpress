@@ -1,10 +1,10 @@
 .env
 .env.wp-salt
 
-/docker/app/initdb.d/*
-!/docker/app/initdb.d/.gitkeep
-/docker/app/bin/setup.d/*
-!/docker/app/bin/setup.d/.gitkeep
+/docker/storage/app/initdb.d/*
+!/docker/storage/app/initdb.d/.gitkeep
+/docker/storage/app/setup.d/*
+!/docker/storage/app/setup.d/.gitkeep
 
 /phpmyadmin/*
 !/phpmyadmin/public

@@ -3,7 +3,7 @@ version: '3.6'
 services:
   web:
     build:
-      context: ./docker/nginx
+      context: docker/build/nginx
       dockerfile: Dockerfile
       args:
         - NGINX_VERSION=${NGINX_VERSION}
@@ -15,7 +15,7 @@ services:
       - NGINX_ENABLE_SSL
       - NGINX_FORCE_HTTPS
     volumes:
-      - ./docker/nginx/certs:/etc/nginx/certs
+      - ./docker/storage/nginx/certs:/etc/nginx/certs
       - ./wordpress:/var/www/html/wordpress:delegated
       - ./phpmyadmin:/var/www/html/phpmyadmin:delegated
     depends_on:
@@ -23,7 +23,7 @@ services:
 
   app:
     build:
-      context: ./docker/app
+      context: docker/build/app
       dockerfile: Dockerfile
       args:
         - PHP_VERSION=${PHP_VERSION}
@@ -43,15 +43,15 @@ services:
     volumes:
       - ./wordpress:/var/www/html/wordpress:delegated
       - ./phpmyadmin:/var/www/html/phpmyadmin:delegated
-      - ./docker/app/php.ini:/usr/local/etc/php/conf.d/php.ini:cached
-      - ./docker/app/initdb.d:/initdb.d
-      - ./docker/app/setup.d:/setup.d
+      - ./docker/storage/app/php.ini:/usr/local/etc/php/conf.d/php.ini:cached
+      - ./docker/storage/app/initdb.d:/initdb.d
+      - ./docker/storage/app/setup.d:/setup.d
     depends_on:
       - db
 
   db:
     build:
-      context: ./docker/mysql
+      context: docker/build/mysql
       dockerfile: Dockerfile
       args:
         - MYSQL_VERSION=${MYSQL_VERSION}
@@ -61,8 +61,8 @@ services:
       - MYSQL_ROOT_PASSWORD
       - MYSQL_DATABASE
     volumes:
-      - ./docker/mysql/data:/var/lib/mysql
-      - ./docker/mysql/docker.cnf:/etc/mysql/conf.d/docker.cnf:cached
+      - ./docker/storage/mysql/data:/var/lib/mysql
+      - ./docker/storage/mysql/docker.cnf:/etc/mysql/conf.d/docker.cnf:cached
 
   mail:
     image: mailhog/mailhog
