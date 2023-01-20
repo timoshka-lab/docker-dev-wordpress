@@ -20,6 +20,10 @@ services:
       - ./phpmyadmin:/var/www/html/phpmyadmin:delegated
     depends_on:
       - app
+    networks:
+      default:
+        aliases:
+          - ${NGINX_SERVER_NAME}
 
   app:
     build:
