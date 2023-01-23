@@ -2,7 +2,7 @@
 * * * * * /cronjob app www-data /usr/local/bin/wp cron event run --path="/var/www/html/wordpress/public" --all
 
 # General Usage
-# * * * * * /cronjob <container> <user> <command>
+# * * * * * /cronjob <service> <user> <command>
 
 # Example: Run a script located in /var/www/html/wordpress/cron inside "app" container as the "www-data" user
 # * * * * * /cronjob app www-data php /var/www/html/wordpress/cron/my-script.php

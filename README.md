@@ -33,7 +33,7 @@ docker compose exec app /setup.sh [--version version] [--skip-wp]
 
 ### インストール後の設定・確認
 * '/etc/hosts' ファイルを編集します。詳細はこちら： 'docker compose logs web'
-* 'docker/nginx/certs' 内の 'server.crt' 証明書を端末のキーチェーンに追加します。
+* 'docker/storage/nginx/certs' 内の 'server.crt' 証明書を端末のキーチェーンに追加します。
 * '$WP_SITE_URL' で設定したURLをブラウザで確認できます。
 * WordPressの管理ユーザーパスワードは 'develop' です。
 * 'Dev SMTP' プラグインを管理画面から有効化します。 Mailhogへのアクセスこちら： [http://127.0.0.1:8025/](http://127.0.0.1:8025/).
@@ -52,13 +52,13 @@ docker compose down
 
 ## データベースのエクスポート
 ```zsh
-# docker/app/initdb.d/001-mysql-init.sql にエクスポートされます。
+# docker/storage/app/initdb.d/001-mysql-init.sql にエクスポートされます。
 docker compose exec app /export.sh
 ```
 
 ## データベースのインポート
 ```zsh
-# docker/app/initdb.d/001-mysql-init.sql からインポートされます。
+# docker/storage/app/initdb.d/001-mysql-init.sql からインポートされます。
 docker compose exec app /import.sh
 ```
 
@@ -103,7 +103,7 @@ docker compose exec app /setup.sh [--version version]
 
 #### インストール後の設定・確認
 * '/etc/hosts' ファイルを編集します。詳細はこちら： 'docker compose logs web'
-* 'docker/nginx/certs' 内の 'server.crt' 証明書を端末のキーチェーンに追加します。
+* 'docker/storage/nginx/certs' 内の 'server.crt' 証明書を端末のキーチェーンに追加します。
 * '$WP_SITE_URL' で設定したURLをブラウザで確認できます。
 * WordPressの管理ユーザーパスワードは 'develop' です。
 * 'Dev SMTP' プラグインを管理画面から有効化します。 Mailhogへのアクセスこちら： [http://127.0.0.1:8025/](http://127.0.0.1:8025/).
