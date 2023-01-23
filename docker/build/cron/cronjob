@@ -10,7 +10,10 @@ if [ ${#@} -lt 3 ]; then
   exit 1
 fi
 
-# Alternative way
-# docker exec "$1" bash -c "sudo -Eu $2 ${*:3}"
+CONTAINER_NAME=$1
 
-docker exec "$1" sudo -Eu "$2" -- bash -c "${*:3}"
+if [ -n "$CONTAINER_NAME_PREFIX" ]; then
+  CONTAINER_NAME="${CONTAINER_NAME_PREFIX}-${CONTAINER_NAME}"
+fi
+
+docker exec "$CONTAINER_NAME" sudo -Eu "$2" -- bash -c "${*:3}"

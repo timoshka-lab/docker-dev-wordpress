@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile
       args:
         - NGINX_VERSION=${NGINX_VERSION}
-    container_name: web
+    container_name: ${WEB_CONTAINER_NAME}
     ports:
       - "80:80"
       - "443:443"
@@ -15,6 +15,7 @@ services:
       - NGINX_SERVER_NAME
       - NGINX_ENABLE_SSL
       - NGINX_FORCE_HTTPS
+      - APP_CONTAINER_NAME
       - TZ=${TIMEZONE:-Asia/Tokyo}
     volumes:
       - ./docker/storage/nginx/certs:/etc/nginx/certs
@@ -36,7 +37,7 @@ services:
       dockerfile: Dockerfile
       args:
         - PHP_VERSION=${PHP_VERSION}
-    container_name: app
+    container_name: ${APP_CONTAINER_NAME}
     env_file:
       - .env.wp-salt
     environment:
@@ -45,8 +46,8 @@ services:
       - MYSQL_USER
       - MYSQL_PASSWORD
       - MYSQL_DATABASE
-      - MYSQL_HOST=db
-      - SMTP_HOST=mail
+      - MYSQL_HOST=${DB_CONTAINER_NAME}
+      - SMTP_HOST=${MAIL_CONTAINER_NAME}
       - SMTP_PORT=1025
       - SMTP_FROM=${WP_EMAIL}
       - SMTP_NAME=WordPress
@@ -69,7 +70,7 @@ services:
       dockerfile: Dockerfile
       args:
         - MYSQL_VERSION=${MYSQL_VERSION}
-    container_name: db
+    container_name: ${DB_CONTAINER_NAME}
     # MySQL8以下をご利用の場合は、下記のコメントを外してください。
     # platform: linux/amd64
     environment:
@@ -89,9 +90,10 @@ services:
     build:
       context: docker/build/cron
       dockerfile: Dockerfile
-    container_name: cron
+    container_name: ${CRON_CONTAINER_NAME}
     init: true
     environment:
+      - CONTAINER_NAME_PREFIX=${COMPOSE_PROJECT_NAME}
       - TZ=${TIMEZONE:-Asia/Tokyo}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -106,7 +108,7 @@ services:
     build:
       context: docker/build/mail
       dockerfile: Dockerfile
-    container_name: mail
+    container_name: ${MAIL_CONTAINER_NAME}
     platform: linux/amd64
     ports:
       - "8025:8025"
@@ -125,7 +127,5 @@ volumes:
   maildir:
 
 networks:
-  default:
-    name: wordpress-default
   wordpress-shared:
     external: true
