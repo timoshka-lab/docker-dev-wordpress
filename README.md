@@ -26,6 +26,7 @@ cp .env.wp-salt.example .env.wp-salt
 # .envと.env.wp-saltファイルを編集
 
 docker compose build
+docker network inspect wordpress-shared > /dev/null 2>&1 || docker network create wordpress-shared
 docker compose up -d
 docker compose exec app /setup.sh [--version version] [--skip-wp]
 ```
@@ -95,6 +96,7 @@ cp .env.wp-salt.example .env.wp-salt
 # .envと.env.wp-saltファイルを編集
 
 docker compose build
+docker network inspect wordpress-shared > /dev/null 2>&1 || docker network create wordpress-shared
 docker compose up -d
 docker compose exec app /setup.sh [--version version]
 ```
