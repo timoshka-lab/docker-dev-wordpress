@@ -2,7 +2,7 @@
 set -eu
 
 function usage() {
-    echo "Usage: cronjob <container> <user> <command>"
+    echo "Usage: cronjob <service> <user> <command>"
 }
 
 if [ ${#@} -lt 3 ]; then
