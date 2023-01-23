@@ -1,0 +1,16 @@
+#!/bin/bash
+set -eu
+
+function usage() {
+    echo "Usage: cronjob <container> <user> <command>"
+}
+
+if [ ${#@} -lt 3 ]; then
+  usage
+  exit 1
+fi
+
+# Alternative way
+# docker exec "$1" bash -c "sudo -Eu $2 ${*:3}"
+
+docker exec "$1" sudo -Eu "$2" -- bash -c "${*:3}"

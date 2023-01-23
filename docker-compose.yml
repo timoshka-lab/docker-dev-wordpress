@@ -1,4 +1,4 @@
-version: '3.6'
+version: '3.7'
 
 services:
   web:
@@ -7,6 +7,7 @@ services:
       dockerfile: Dockerfile
       args:
         - NGINX_VERSION=${NGINX_VERSION}
+    container_name: web
     ports:
       - "80:80"
       - "443:443"
@@ -14,6 +15,7 @@ services:
       - NGINX_SERVER_NAME
       - NGINX_ENABLE_SSL
       - NGINX_FORCE_HTTPS
+      - TZ=${TIMEZONE:-Asia/Tokyo}
     volumes:
       - ./docker/storage/nginx/certs:/etc/nginx/certs
       - ./wordpress:/var/www/html/wordpress:delegated
@@ -24,6 +26,9 @@ services:
       default:
         aliases:
           - ${NGINX_SERVER_NAME}
+      wordpress-shared:
+        aliases:
+          - ${NGINX_SERVER_NAME}
 
   app:
     build:
@@ -31,6 +36,7 @@ services:
       dockerfile: Dockerfile
       args:
         - PHP_VERSION=${PHP_VERSION}
+    container_name: app
     env_file:
       - .env.wp-salt
     environment:
@@ -44,6 +50,7 @@ services:
       - SMTP_PORT=1025
       - SMTP_FROM=${WP_EMAIL}
       - SMTP_NAME=WordPress
+      - TZ=${TIMEZONE:-Asia/Tokyo}
     volumes:
       - ./wordpress:/var/www/html/wordpress:delegated
       - ./phpmyadmin:/var/www/html/phpmyadmin:delegated
@@ -52,6 +59,9 @@ services:
       - ./docker/storage/app/setup.d:/setup.d
     depends_on:
       - db
+    networks:
+      - default
+      - wordpress-shared
 
   db:
     build:
@@ -59,18 +69,44 @@ services:
       dockerfile: Dockerfile
       args:
         - MYSQL_VERSION=${MYSQL_VERSION}
+    container_name: db
+    # MySQL8以下をご利用の場合は、下記のコメントを外してください。
+    # platform: linux/amd64
     environment:
       - MYSQL_USER
       - MYSQL_PASSWORD
       - MYSQL_ROOT_PASSWORD
       - MYSQL_DATABASE
+      - TZ=${TIMEZONE:-Asia/Tokyo}
     volumes:
       - ./docker/storage/mysql/data:/var/lib/mysql
       - ./docker/storage/mysql/docker.cnf:/etc/mysql/conf.d/docker.cnf:cached
+    networks:
+      - default
+      - wordpress-shared
+
+  cron:
+    build:
+      context: docker/build/cron
+      dockerfile: Dockerfile
+    container_name: cron
+    init: true
+    environment:
+      - TZ=${TIMEZONE:-Asia/Tokyo}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./docker/storage/cron/crontabs:/etc/crontabs
+    depends_on:
+      - app
+    networks:
+      - default
+      - wordpress-shared
 
   mail:
-    image: mailhog/mailhog
-    container_name: mailhog
+    build:
+      context: docker/build/mail
+      dockerfile: Dockerfile
+    container_name: mail
     platform: linux/amd64
     ports:
       - "8025:8025"
@@ -81,6 +117,15 @@ services:
       - maildir:/tmp
     depends_on:
       - app
+    networks:
+      - default
+      - wordpress-shared
 
 volumes:
   maildir:
+
+networks:
+  default:
+    name: wordpress-default
+  wordpress-shared:
+    external: true

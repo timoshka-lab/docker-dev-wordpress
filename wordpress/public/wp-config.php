@@ -85,6 +85,7 @@ define( 'WP_DEBUG', false );
 
 /* カスタム値は、この行と「編集が必要なのはここまでです」の行の間に追加してください。 */
 
+define( 'DISABLE_WP_CRON', true );
 define( 'WP_HOME', getenv('WP_SITE_URL') );
 define( 'WP_SITEURL', getenv('WP_SITE_URL') );
 
