@@ -1,7 +1,6 @@
 ARG PHP_VERSION=7.4
 FROM php:${PHP_VERSION}-fpm-alpine
 
-ENV TZ "Asia/Tokyo"
 ENV COMPOSER_ALLOW_SUPERUSER 1
 
 # Set timezone
@@ -9,25 +8,20 @@ RUN set -ex && \
     apk update && \
     apk upgrade && \
     apk add --no-cache tzdata && \
-    cp /usr/share/zoneinfo/$TZ /etc/localtime && \
-    echo $TZ > /etc/timezone && \
-    apk del tzdata && \
     rm -rf /tmp/* /var/cache/apk/*
 
 # Install dependency
 RUN apk --update add \
     bash \
+    sudo \
     git \
     zip \
     wget \
-    zlib \
-    zlib-dev \
-    gcc \
+    mysql-client \
     libjpeg \
     optipng \
     gifsicle \
     pngquant \
-    mysql-client \
     libjpeg-turbo-utils && \
     rm -rf /tmp/* /var/cache/apk/*
 

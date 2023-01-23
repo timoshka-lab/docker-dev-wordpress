@@ -13,6 +13,9 @@
 !/phpmyadmin/public/config.inc.php
 
 /wordpress/*
+!/wordpress/cron
+/wordpress/cron/*
+!/wordpress/cron/.gitkeep
 !/wordpress/public
 /wordpress/public/*
 !/wordpress/public/.gitkeep
