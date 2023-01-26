@@ -22,6 +22,7 @@ RUN apk --update add \
     optipng \
     gifsicle \
     pngquant \
+    openssl \
     libjpeg-turbo-utils && \
     rm -rf /tmp/* /var/cache/apk/*
 
