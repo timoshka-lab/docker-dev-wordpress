@@ -4,7 +4,7 @@ FROM nginx:${NGINX_VERSION}-alpine
 ARG ENVPLATE_VERSION=1.0.2
 
 RUN set -ex && \
-    apk add --no-cache wget bash sudo && \
+    apk add --no-cache wget bash sudo openssl && \
     ENVPLATE_ARCH=$(uname -m) && \
     if [ "$ENVPLATE_ARCH" = "aarch64" ]; then ENVPLATE_ARCH="arm64"; fi && \
     wget -q https://github.com/kreuzwerker/envplate/releases/download/v${ENVPLATE_VERSION}/envplate_${ENVPLATE_VERSION}_$(uname -s)_${ENVPLATE_ARCH}.tar.gz -O - | tar xz && \
