@@ -11,15 +11,15 @@ function wp_cmd() {
   /usr/local/bin/php -d error_reporting='E_ALL ^ E_DEPRECATED' /usr/local/bin/wp "$@"
 }
 
-args=()
 SKIP_WP=false
+WP_VERSION=
 
 for OPT in "$@"
 do
   case $OPT in
     --version)
-      args+=("--version")
-      args+=("$2")
+      WP_VERSION=$2
+
       shift 2
       ;;
     --skip-wp)
@@ -46,6 +46,13 @@ if [ "$SKIP_WP" = false ]; then
   if [ -f "$WORDPRESS_DIR/wp-includes/version.php" ]; then
     echo "WordPress is already downloaded. Skipping..."
   else
+    args=()
+
+    if [ -z "$WP_VERSION" ] && [ -n "${WP_DEFAULT_VERSION:-}" ] ; then
+      args+=("--version")
+      args+=("$WP_DEFAULT_VERSION")
+    fi
+
     if [ -d "$WORDPRESS_DIR/wp-content" ]; then
       echo "Downloading WordPress without default content..."
       wp_cmd core download --path="$WORDPRESS_DIR" --locale=ja --allow-root --skip-content "${args[@]}"
