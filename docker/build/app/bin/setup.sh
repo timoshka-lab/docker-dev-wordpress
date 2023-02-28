@@ -49,8 +49,7 @@ if [ "$SKIP_WP" = false ]; then
     args=()
 
     if [ -z "$WP_VERSION" ] && [ -n "${WP_DEFAULT_VERSION:-}" ] ; then
-      args+=("--version")
-      args+=("$WP_DEFAULT_VERSION")
+      args+=("--version=$WP_DEFAULT_VERSION")
     fi
 
     if [ -d "$WORDPRESS_DIR/wp-content" ]; then
