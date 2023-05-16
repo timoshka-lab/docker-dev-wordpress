@@ -15,12 +15,16 @@ services:
       - NGINX_SERVER_NAME
       - NGINX_ENABLE_SSL
       - NGINX_FORCE_HTTPS
-      - APP_CONTAINER_NAME
+      - NGINX_FASTCGI_PASS=${APP_CONTAINER_NAME}:9000
+      - REVIEW_MODE=${REVIEW_MODE:-false}
+      - WP_BASIC_AUTH_USER=${WP_BASIC_AUTH_USER:-}
+      - WP_BASIC_AUTH_PASSWORD=${WP_BASIC_AUTH_PASSWORD:-}
       - TZ=${TIMEZONE:-Asia/Tokyo}
     volumes:
-      - ./docker/storage/nginx/certs:/etc/nginx/certs
-      - ./wordpress:/var/www/html/wordpress:delegated
-      - ./phpmyadmin:/var/www/html/phpmyadmin:delegated
+      - "letsencrypt:/etc/letsencrypt"
+      - "$STORAGE_PATH/nginx/certs:/etc/nginx/certs"
+      - "$WORDPRESS_VOLUME_PATH:/var/www/html/wordpress:delegated"
+      - "$PHPMYADMIN_VOLUME_PATH:/var/www/html/phpmyadmin:delegated"
     depends_on:
       - app
     networks:
@@ -54,11 +58,11 @@ services:
       - SMTP_NAME=WordPress
       - TZ=${TIMEZONE:-Asia/Tokyo}
     volumes:
-      - ./wordpress:/var/www/html/wordpress:delegated
-      - ./phpmyadmin:/var/www/html/phpmyadmin:delegated
-      - ./docker/storage/app/php.ini:/usr/local/etc/php/conf.d/php.ini:cached
-      - ./docker/storage/app/initdb.d:/initdb.d
-      - ./docker/storage/app/setup.d:/setup.d
+      - "$WORDPRESS_VOLUME_PATH:/var/www/html/wordpress:delegated"
+      - "$PHPMYADMIN_VOLUME_PATH:/var/www/html/phpmyadmin:delegated"
+      - "$STORAGE_PATH/app/php.ini:/usr/local/etc/php/conf.d/php.ini:cached"
+      - "$STORAGE_PATH/app/initdb.d:/initdb.d"
+      - "$STORAGE_PATH/app/setup.d:/setup.d"
     depends_on:
       - db
     networks:
@@ -81,8 +85,8 @@ services:
       - MYSQL_DATABASE
       - TZ=${TIMEZONE:-Asia/Tokyo}
     volumes:
-      - ./docker/storage/mysql/data:/var/lib/mysql
-      - ./docker/storage/mysql/docker.cnf:/etc/mysql/conf.d/docker.cnf:cached
+      - "$STORAGE_PATH/mysql/data:/var/lib/mysql"
+      - "$STORAGE_PATH/mysql/docker.cnf:/etc/mysql/conf.d/docker.cnf:cached"
     networks:
       - default
       - wordpress-shared
@@ -97,8 +101,8 @@ services:
       - CONTAINER_NAME_PREFIX=${COMPOSE_PROJECT_NAME}
       - TZ=${TIMEZONE:-Asia/Tokyo}
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./docker/storage/cron/crontabs:/etc/crontabs
+      - "$DOCKER_SOCKET:/var/run/docker.sock:ro"
+      - "$STORAGE_PATH/cron/crontabs:/etc/crontabs"
     depends_on:
       - app
     networks:
@@ -113,10 +117,10 @@ services:
     ports:
       - "8025:8025"
     environment:
-      MH_STORAGE: maildir
-      MH_MAILDIR_PATH: /tmp
+      - MP_DATA_FILE=/data/mailpit.db
+      - TZ=${TIMEZONE:-Asia/Tokyo}
     volumes:
-      - maildir:/tmp
+      - maildir:/data
     depends_on:
       - app
     networks:
@@ -125,6 +129,7 @@ services:
 
 volumes:
   maildir:
+  letsencrypt:
 
 networks:
   wordpress-shared:

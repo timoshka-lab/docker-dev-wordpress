@@ -1,0 +1,188 @@
+#!/usr/bin/env bash
+
+set -e
+
+function load_env() {
+    local env_file="$1"
+    eval "$(cat "$env_file" <(echo) <(declare -x))"
+}
+
+function validate_env() {
+    if [ "${REVIEW_MODE:-}" != true ]; then
+      echo "This script is only meant to be used in review mode." >&2
+      exit 1
+    fi
+
+    if [ ! -f "$LOCAL_COMPOSE_FILE" ]; then
+      echo "Compose file was not found." >&2
+      exit 1
+    fi
+
+    if [ ! -d "$LOCAL_WORDPRESS_DIR" ]; then
+      echo "WordPress directory was not found." >&2
+      exit 1
+    fi
+
+    if [ ! -d "$LOCAL_STORAGE_DIR" ]; then
+      echo "Storage directory was not found." >&2
+      exit 1
+    fi
+
+    if [ -z "$REVIEW_HOST_NAME" ]; then
+      echo "Missing required environment variable: REVIEW_HOST_NAME" >&2
+      exit 1
+    fi
+
+    if [ -z "$REVIEW_HOST_USER" ]; then
+      echo "Missing required environment variable: REVIEW_HOST_USER" >&2
+      exit 1
+    fi
+}
+
+function test_ssh_connection() {
+    if ! ssh -q "$REVIEW_HOST_USER@$REVIEW_HOST_NAME" exit; then
+      echo "SSH connection failed." >&2
+      exit 1
+    fi
+}
+
+function upload_cmd() {
+  local src_dir="$1"
+  local dist_dir="$2"
+
+  rsync -azh --progress "$src_dir" "$REVIEW_HOST_USER@$REVIEW_HOST_NAME:$dist_dir" "${@:3}"
+}
+
+function ssh_cmd() {
+  ssh -q "$REVIEW_HOST_USER@$REVIEW_HOST_NAME" "$@"
+}
+
+function docker_compose_cmd() {
+  DOCKER_HOST="ssh://$REVIEW_HOST_USER@$REVIEW_HOST_NAME" docker compose --env-file="$LOCAL_PROJECT_DIR/.env" --env-file="$LOCAL_REVIEW_DIR/.env" -f "$LOCAL_COMPOSE_FILE" "$@"
+}
+
+function docker_cmd() {
+  DOCKER_HOST="ssh://$REVIEW_HOST_USER@$REVIEW_HOST_NAME" docker "$@"
+}
+
+function upload_storage_directory() {
+  local exclude_mysql="$1"
+  local exclude_args=("--exclude=nginx")
+
+  if [ "$exclude_mysql" = true ]; then
+    exclude_args+=("--exclude=mysql")
+  fi
+
+  ssh_cmd mkdir -p "$STORAGE_PATH"
+  upload_cmd "$LOCAL_STORAGE_DIR/" "$STORAGE_PATH" "${exclude_args[@]}" --delete
+}
+
+function upload_wordpress_directory() {
+  ssh_cmd mkdir -p "$WORDPRESS_VOLUME_PATH"
+  upload_cmd "$LOCAL_WORDPRESS_DIR/" "$WORDPRESS_VOLUME_PATH"
+}
+
+function fix_wordpress_permissions() {
+    ssh_cmd "find $WORDPRESS_VOLUME_PATH -type d -exec chmod 755 {} \; \
+    && find $WORDPRESS_VOLUME_PATH -type f -exec chmod 644 {} \; \
+    && chmod -R 777 $WORDPRESS_VOLUME_PATH/public/wp-content/uploads \
+    && chown -R 82:82 $WORDPRESS_VOLUME_PATH/public"
+}
+
+function start_docker() {
+  if ! docker_cmd network inspect wordpress-shared > /dev/null 2>&1; then
+    echo "Creating docker network 'wordpress-shared'..."
+    docker_cmd network create wordpress-shared
+  fi
+
+  docker_compose_cmd up -d --no-deps --build
+}
+
+function deploy_automatically() {
+  if ! ssh_cmd "[ -d $STORAGE_PATH ]"; then
+    echo "Uploading storage directory..."
+    upload_storage_directory false
+  fi
+
+  echo "Uploading WordPress volume directory..."
+  upload_wordpress_directory
+
+  echo "Fixing WordPress permissions..."
+  fix_wordpress_permissions
+
+  echo "Starting containers..."
+  start_docker
+}
+
+function main () {
+  LOCAL_REVIEW_DIR=$(dirname "$(realpath "$0")")
+  LOCAL_DOCKER_DIR=$(dirname "$LOCAL_REVIEW_DIR")
+  LOCAL_PROJECT_DIR=$(dirname "$LOCAL_DOCKER_DIR")
+  LOCAL_STORAGE_DIR="$LOCAL_DOCKER_DIR/storage"
+  LOCAL_WORDPRESS_DIR="$LOCAL_PROJECT_DIR/wordpress"
+  LOCAL_COMPOSE_FILE="$LOCAL_PROJECT_DIR/docker-compose.yml"
+
+  echo "Loading environment variables..."
+  load_env "$LOCAL_PROJECT_DIR/.env"
+  load_env "$LOCAL_REVIEW_DIR/.env"
+
+  echo "Validating environment variables..."
+  validate_env
+
+  echo "Testing SSH connection..."
+  test_ssh_connection
+
+  subcommand="${1:-deploy}"
+
+  if [ -z "$subcommand" ]; then
+    shift
+  fi
+
+  case "$subcommand" in
+    deploy)
+        deploy_automatically
+        ;;
+    stop)
+        docker_compose_cmd down
+        ;;
+    serve)
+        docker_compose_cmd up -d
+        ;;
+    dc)
+        docker_compose_cmd "${@:2}"
+        ;;
+    docker)
+        docker_cmd "${@:2}"
+        ;;
+    storage)
+        IGNORE_MYSQL=true
+
+        for OPT in "$@"
+        do
+          case $OPT in
+            --with-mysql)
+              IGNORE_MYSQL=false
+              shift 1
+              ;;
+          esac
+        done
+
+        upload_storage_directory $IGNORE_MYSQL
+        ;;
+    wordpress)
+        upload_wordpress_directory "$@"
+        ;;
+    help | *)
+        echo "Usage:"
+        echo "  deploy                          Deploy automatically all stuff."
+        echo "  deploy wordpress                Upload wordpress source files."
+        echo "  deploy storage [--with-mysql]   Upload storage directories. Use --with-mysql to upload mysql directory."
+        echo "  deploy serve                    Start all containers."
+        echo "  deploy stop                     Stop all containers."
+        echo "  deploy dc [args]                Run docker-compose command."
+        echo "  deploy docker [args]            Run docker command."
+        exit 1
+  esac
+}
+
+main "$@"
