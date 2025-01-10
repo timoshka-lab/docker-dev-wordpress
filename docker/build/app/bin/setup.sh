@@ -35,7 +35,15 @@ PHPMYADMIN_DIR=/var/www/html/phpmyadmin/public
 MYSQL_INIT_FILE=/initdb.d/001-mysql-init.sql
 EXTRA_SETUP_BIN_DIR=/setup.d
 
-until mysqladmin ping -h "$MYSQL_HOST" --silent; do
+MYSQLADMIN_BIN=""
+
+if type mariadb-admin >/dev/null; then
+    MYSQLADMIN_BIN="mariadb-admin"
+else
+    MYSQLADMIN_BIN="mysqladmin"
+fi
+
+until $MYSQLADMIN_BIN ping -h "$MYSQL_HOST" --ssl-verify-server-cert=off -p"$MYSQL_PASSWORD" --silent; do
   echo 'Waiting for mysql server connection...'
   sleep 2
 done
