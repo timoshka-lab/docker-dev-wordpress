@@ -12,7 +12,7 @@ MYSQL_INIT_FILE=/initdb.d/001-mysql-init.sql
 
 if [ -f $MYSQL_INIT_FILE ]; then
   echo "Importing database..."
-  wp_cmd db import --path="$WORDPRESS_DIR" --allow-root "$MYSQL_INIT_FILE"
+  wp_cmd db import --defaults --path="$WORDPRESS_DIR" --allow-root "$MYSQL_INIT_FILE"
 else
   echo "No database to import."
 fi

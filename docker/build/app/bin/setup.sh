@@ -71,7 +71,7 @@ if [ "$SKIP_WP" = false ]; then
 
   if [ -f "$MYSQL_INIT_FILE" ]; then
     echo "Restoring database..."
-    wp_cmd db import --path="$WORDPRESS_DIR" --allow-root "$MYSQL_INIT_FILE"
+    wp_cmd db import --defaults --path="$WORDPRESS_DIR" --allow-root "$MYSQL_INIT_FILE"
   else
     if wp_cmd core is-installed --path="$WORDPRESS_DIR" --allow-root; then
       echo "Skipping WordPress installation..."
@@ -89,7 +89,7 @@ if [ "$SKIP_WP" = false ]; then
       wp_cmd plugin install --path="$WORDPRESS_DIR" --allow-root --activate https://github.com/timoshka-lab/wp-dev-smtp/archive/main.zip
 
       echo "Exporting database..."
-      wp_cmd db export --path="$WORDPRESS_DIR" --add-drop-table --allow-root "$MYSQL_INIT_FILE"
+      wp_cmd db export --defaults --path="$WORDPRESS_DIR" --add-drop-table --allow-root "$MYSQL_INIT_FILE"
     fi
   fi
 
