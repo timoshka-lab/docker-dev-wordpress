@@ -35,4 +35,4 @@ if [ "$SKIP_PASS_RESET" = false ]; then
 fi
 
 echo "Exporting database..."
-wp_cmd db export --path="$WORDPRESS_DIR" --add-drop-table --allow-root "$MYSQL_INIT_FILE"
+wp_cmd db export --defaults --path="$WORDPRESS_DIR" --add-drop-table --allow-root "$MYSQL_INIT_FILE"
