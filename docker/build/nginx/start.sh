@@ -58,10 +58,19 @@ function main() {
         CERTS_DNS="$(IFS=,; echo "${cert_dns_list[*]}")"
 
         echo "Generating new certs..."
-        echo "subjectAltName = ${CERTS_DNS}, IP:127.0.0.1" > "$CERTS_DIR/subjectnames.txt"
-        openssl genrsa 2048 > "$CERTS_DIR/server.key"
-        openssl req -new -key "$CERTS_DIR/server.key" -subj "/C=JP/CN=$NGINX_SERVER_NAME" > "$CERTS_DIR/server.csr"
-        openssl x509 -days 3650 -req -extfile "$CERTS_DIR/subjectnames.txt" -signkey "$CERTS_DIR/server.key" < "$CERTS_DIR/server.csr" > "$CERTS_DIR/server.crt"
+        openssl req -x509 -days 3650 -nodes -newkey rsa:2048 -keyout "$CERTS_DIR/server.key" -out "$CERTS_DIR/server.crt" -config - <<-EOF
+[req]
+distinguished_name = req_distinguished_name
+x509_extensions = v3_req
+prompt = no
+[req_distinguished_name]
+C = JP
+CN = ${domains[0]}
+[v3_req]
+subjectAltName = ${CERTS_DNS}
+keyUsage = critical, digitalSignature, keyEncipherment
+extendedKeyUsage = serverAuth
+EOF
       fi
     fi
 
